@@ -1,44 +1,35 @@
-name: CI/CD Pipeline
+name: TXT Artifact Example
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - name: Install dependencies
-        run: npm install
-      - name: Build the project
-        run: npm run build
-      - name: Upload build artifacts
+
+      - name: Create sample .txt file
+        run: echo "Hello from GitHub Actions!" > example.txt
+
+      - name: Upload txt artifact
         uses: actions/upload-artifact@v3
         with:
-          name: build-output
-          path: dist/
+          name: txt-file
+          path: example.txt
 
-  deploy:
+  process:
     runs-on: ubuntu-latest
-    needs: build
+    needs: generate
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Download build artifacts
+      - name: Download txt artifact
         uses: actions/download-artifact@v3
         with:
-          name: build-output
-      - name: Deploy to production
-        run: |
-          echo "Deploying to production server..."
-          # Сюда можно добавить команду для деплоя
+          name: txt-file
+
+      - name: Display file contents
+        run: cat example.txt
+
